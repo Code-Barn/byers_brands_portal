@@ -21,7 +21,7 @@ class CustomUser(AbstractUser):
         max_length=255,
         blank=True,
         null=True,
-        help_text='User DID (e.g., did:key:z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od935YF4s8M7V)
+        help_text='User DID (e.g., did:key:z6MkqRYqQiSgvZQdnBytw86Qbs2ZWUkGv22od...)'
     )
     did_document = models.JSONField(
         'DID Document',

@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Byers Brands{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-800 dark:to-blue-950 text-white py-20 lg:py-32">
+    <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                Welcome to Byers Brands
+            </h1>
+            <p class="text-xl md:text-2xl mb-8 leading-relaxed">
+                Premium products and innovative solutions designed for excellence.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'brand:products' %}" class="inline-flex items-center justify-center px-8 py-3 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-blue-600 transition-colors">
+                    Explore Products
+                </a>
+                <a href="{% url 'brand:about' %}" class="inline-flex items-center justify-center px-8 py-3 bg-white text-blue-600 font-medium rounded-lg hover:bg-gray-100 transition-colors">
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+{% if featured_products %}
+<section class="py-16 bg-white dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Featured Products</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                Discover our handpicked selection of premium offerings.
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for product in featured_products %}
+            <div class="bg-gray-50 dark:bg-gray-900 rounded-xl shadow-md overflow-hidden group transition-transform hover:scale-105">
+                <div class="h-48 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 flex items-center justify-center">
+                    <div class="w-16 h-16 bg-blue-600 dark:bg-blue-400 rounded-full flex items-center justify-center">
+                        <span class="text-white dark:text-gray-900 text-2xl font-bold">BB</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ product.name }}</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">{{ product.short_description|default:product.description|truncatewords:20 }}</p>
+                    <a href="{% url 'brand:product_detail' product.id %}" class="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                        Learn more &rarr;
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- About Preview -->
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+                    About Byers Brands
+                </h2>
+                <p class="text-lg text-gray-600 dark:text-gray-400 mb-6">
+                    At Byers Brands, we believe in creating exceptional products that make a difference.
+                    Our commitment to quality and innovation drives everything we do.
+                </p>
+                <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+                    With years of experience and a passion for excellence, we've built a reputation
+                    for delivering premium solutions that exceed expectations.
+                </p>
+                <a href="{% url 'brand:about' %}" class="inline-flex items-center text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                    Read our full story &rarr;
+                </a>
+            </div>
+            <div class="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-2xl p-8 lg:p-12">
+                <div class="space-y-4">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-600 dark:bg-blue-400 rounded-full flex items-center justify-center mr-4">
+                            <span class="text-white dark:text-gray-900 text-xl font-bold">1</span>
+                        </div>
+                        <span class="text-lg font-medium text-gray-900 dark:text-white">Premium Quality</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-600 dark:bg-blue-400 rounded-full flex items-center justify-center mr-4">
+                            <span class="text-white dark:text-gray-900 text-xl font-bold">2</span>
+                        </div>
+                        <span class="text-lg font-medium text-gray-900 dark:text-white">Innovative Design</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-600 dark:bg-blue-400 rounded-full flex items-center justify-center mr-4">
+                            <span class="text-white dark:text-gray-900 text-xl font-bold">3</span>
+                        </div>
+                        <span class="text-lg font-medium text-gray-900 dark:text-white">Exceptional Service</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Preview -->
+<section class="py-16 bg-white dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+                Get in Touch
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+                Have questions or ready to start your journey with us? We'd love to hear from you.
+            </p>
+            <a href="{% url 'brand:contact' %}" class="inline-flex items-center justify-center px-8 py-3 bg-blue-600 dark:bg-blue-700 text-white font-medium rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors">
+                Contact Us
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

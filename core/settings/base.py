@@ -19,7 +19,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'compressor',
     # Local apps
     'apps.brand',
     'apps.accounts',
@@ -140,12 +139,8 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Compressor settings
+# Static files finders
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
 ]
-
-COMPRESS_ENABLED = True
-COMPRESS_OFFLINE = not os.environ.get('DEBUG', False)

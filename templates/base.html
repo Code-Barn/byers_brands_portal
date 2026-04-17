@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Byers Brands - Premium products and solutions">
+    <title>{% block title %}Byers Brands{% endblock %}</title>
+    
+    {% load static %}
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- Theme Toggle Button -->
+    <button id="theme-toggle" class="fixed top-4 right-4 z-50 p-2 rounded-full bg-blue-600 dark:bg-blue-800 text-white shadow-lg hover:bg-blue-700 dark:hover:bg-blue-900 transition-colors">
+        <svg id="theme-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path class="sun" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" style="display: none;"></path>
+            <path class="moon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+        </svg>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="{% url 'brand:home' %}" class="flex-shrink-0 flex items-center">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-xl">BB</span>
+                        </div>
+                        <span class="ml-3 text-xl font-bold text-gray-900 dark:text-white">Byers Brands</span>
+                    </a>
+                </div>
+                
+                <div class="hidden sm:flex sm:items-center sm:space-x-8">
+                    <a href="{% url 'brand:home' %}" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Home</a>
+                    <a href="{% url 'brand:about' %}" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">About</a>
+                    <a href="{% url 'brand:products' %}" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Products</a>
+                    <a href="{% url 'brand:contact' %}" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Contact</a>
+                    
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'accounts:profile' %}" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Profile</a>
+                        <a href="{% url 'accounts:investor_dashboard' %}" class="bg-blue-600 dark:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors">Investor</a>
+                        <a href="{% url 'accounts:logout' %}" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Logout</a>
+                    {% else %}
+                        <a href="{% url 'accounts:login' %}" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Login</a>
+                        <a href="{% url 'accounts:register' %}" class="bg-blue-600 dark:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors">Register</a>
+                        <a href="{% url 'accounts:did_login' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 px-3 py-2 rounded-md text-sm font-medium transition-colors">DID Login</a>
+                    {% endif %}
+                </div>
+                
+                <!-- Mobile menu button -->
+                <div class="flex items-center sm:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none">
+                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden sm:hidden">
+            <div class="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-800">
+                <a href="{% url 'brand:home' %}" class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Home</a>
+                <a href="{% url 'brand:about' %}" class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">About</a>
+                <a href="{% url 'brand:products' %}" class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Products</a>
+                <a href="{% url 'brand:contact' %}" class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Contact</a>
+                
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:profile' %}" class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Profile</a>
+                    <a href="{% url 'accounts:investor_dashboard' %}" class="block px-3 py-2 text-base font-medium bg-blue-600 dark:bg-blue-700 text-white">Investor</a>
+                    <a href="{% url 'accounts:logout' %}" class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Logout</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">Login</a>
+                    <a href="{% url 'accounts:register' %}" class="block px-3 py-2 text-base font-medium bg-blue-600 dark:bg-blue-700 text-white">Register</a>
+                    <a href="{% url 'accounts:did_login' %}" class="block px-3 py-2 text-base font-medium text-blue-600 dark:text-blue-400">DID Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        {% for message in messages %}
+        <div class="p-4 rounded-md mb-4 {% if message.tags == 'success' %}bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200{% elif message.tags == 'error' %}bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200{% elif message.tags == 'warning' %}bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200{% else %}bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="min-h-screen">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 dark:bg-gray-900 text-gray-400 dark:text-gray-500 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-white dark:text-gray-300 text-lg font-semibold mb-4">Byers Brands</h3>
+                    <p class="text-sm">Premium products and solutions for discerning customers.</p>
+                </div>
+                <div>
+                    <h4 class="text-white dark:text-gray-300 text-sm font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{% url 'brand:home' %}" class="hover:text-white dark:hover:text-gray-300 transition-colors">Home</a></li>
+                        <li><a href="{% url 'brand:about' %}" class="hover:text-white dark:hover:text-gray-300 transition-colors">About Us</a></li>
+                        <li><a href="{% url 'brand:products' %}" class="hover:text-white dark:hover:text-gray-300 transition-colors">Products</a></li>
+                        <li><a href="{% url 'brand:contact' %}" class="hover:text-white dark:hover:text-gray-300 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white dark:text-gray-300 text-sm font-semibold mb-4">Account</h4>
+                    <ul class="space-y-2 text-sm">
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'accounts:profile' %}" class="hover:text-white dark:hover:text-gray-300 transition-colors">Profile</a></li>
+                            <li><a href="{% url 'accounts:investor_dashboard' %}" class="hover:text-white dark:hover:text-gray-300 transition-colors">Investor Dashboard</a></li>
+                            <li><a href="{% url 'accounts:logout' %}" class="hover:text-white dark:hover:text-gray-300 transition-colors">Logout</a></li>
+                        {% else %}
+                            <li><a href="{% url 'accounts:login' %}" class="hover:text-white dark:hover:text-gray-300 transition-colors">Login</a></li>
+                            <li><a href="{% url 'accounts:register' %}" class="hover:text-white dark:hover:text-gray-300 transition-colors">Register</a></li>
+                            <li><a href="{% url 'accounts:did_login' %}" class="hover:text-white dark:hover:text-gray-300 transition-colors">DID Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-700 dark:border-gray-800 text-center text-sm">
+                <p>&copy; 2024 Byers Brands. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="{% static 'js/theme.js' %}"></script>
+    <script src="{% static 'js/mobile-menu.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

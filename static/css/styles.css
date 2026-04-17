@@ -1,0 +1,340 @@
+/**
+ * Byers Brands Custom Styles
+ * Brand Color: #0064aa (Blue)
+ *
+ * This file contains custom CSS styles for the Byers Brands web portal.
+ * Uses Tailwind CSS for utility classes and adds custom styles when needed.
+ */
+
+/* Base Styles */
+@layer base {
+    html {
+        @apply scroll-smooth;
+    }
+
+    body {
+        @apply font-sans antialiased;
+    }
+}
+
+/* Brand Color Variables */
+:root {
+    --brand-blue: #0064aa;
+    --brand-blue-light: #3b82f6;
+    --brand-blue-dark: #1e40af;
+    --brand-gradient: linear-gradient(to right, var(--brand-blue), #1e40af);
+    --brand-gradient-dark: linear-gradient(to right, #1e40af, #0f172a);
+}
+
+/* Light/Dark Mode Custom Classes */
+.bg-brand {
+    background-color: var(--brand-blue);
+}
+
+.bg-brand-light {
+    background-color: var(--brand-blue-light);
+}
+
+.text-brand {
+    color: var(--brand-blue);
+}
+
+.border-brand {
+    border-color: var(--brand-blue);
+}
+
+/* Custom Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slide-in {
+    animation: slideIn 0.5s ease-out;
+}
+
+/* Hero Section Background */
+.hero-pattern {
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+}
+
+.dark .hero-pattern {
+    background-image:
+        radial-gradient(circle at 25% 25%, rgba(0, 0, 0, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.1) 0%, transparent 50%);
+}
+
+/* Card Hover Effects */
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Focus Ring Customization */
+.focus-ring-blue:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 100, 170, 0.2);
+}
+
+/* Line Clamping */
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Prose Styling for Content */
+.prose :where(h1):not(:where([class~='not-prose'] *)) {
+    @apply text-2xl font-bold text-gray-900 dark:text-white mb-4;
+}
+
+.prose :where(h2):not(:where([class~='not-prose'] *)) {
+    @apply text-xl font-bold text-gray-900 dark:text-white mb-3;
+}
+
+.prose :where(h3):not(:where([class~='not-prose'] *)) {
+    @apply text-lg font-semibold text-gray-900 dark:text-white mb-2;
+}
+
+.prose :where(p):not(:where([class~='not-prose'] *)) {
+    @apply text-gray-600 dark:text-gray-400 leading-relaxed mb-4;
+}
+
+.prose :where(ul > li):not(:where([class~='not-prose'] *))::before {
+    content: '';
+    @apply w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full inline-block mr-3 mt-2;
+}
+
+/* Custom Button Styles */
+.btn-primary {
+    @apply bg-blue-600 dark:bg-blue-700 text-white font-medium rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors;
+}
+
+.btn-secondary {
+    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors;
+}
+
+.btn-outline {
+    @apply border-2 border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 font-medium rounded-lg hover:bg-blue-600 hover:text-white hover:dark:bg-blue-400 transition-colors;
+}
+
+/* Form Input Styles */
+.input-field {
+    @apply w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.input-field:focus {
+    @apply border-blue-500 dark:border-blue-500;
+}
+
+/* Card Styles */
+.card {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-md p-6;
+}
+
+.card-featured {
+    @apply bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30;
+}
+
+/* Theme Toggle Styles */
+#theme-toggle {
+    z-index: 9999;
+}
+
+#theme-toggle:hover {
+    transform: scale(1.1);
+}
+
+#theme-icon .sun,
+#theme-icon .moon {
+    transition: all 0.3s ease;
+}
+
+#theme-toggle[aria-label="Switch to dark mode"] #theme-icon .sun {
+    display: block;
+}
+
+#theme-toggle[aria-label="Switch to dark mode"] #theme-icon .moon {
+    display: none;
+}
+
+#theme-toggle[aria-label="Switch to light mode"] #theme-icon .sun {
+    display: none;
+}
+
+#theme-toggle[aria-label="Switch to light mode"] #theme-icon .moon {
+    display: block;
+}
+
+/* Mobile Menu Styles */
+#mobile-menu {
+    @apply transition-all duration-300 ease-in-out;
+}
+
+#mobile-menu-button[aria-expanded="true"] + #mobile-menu {
+    @apply block;
+}
+
+#mobile-menu-button[aria-expanded="false"] + #mobile-menu {
+    @apply hidden;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    @apply inline-block w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full animate-spin;
+}
+
+/* Badge Styles */
+.badge-success {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300;
+}
+
+.badge-warning {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300;
+}
+
+.badge-error {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300;
+}
+
+.badge-info {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300;
+}
+
+/* Toast/Notification Styles */
+.toast {
+    @apply fixed bottom-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg animate-slide-in;
+}
+
+.toast-success {
+    @apply bg-green-500 text-white;
+}
+
+.toast-error {
+    @apply bg-red-500 text-white;
+}
+
+.toast-warning {
+    @apply bg-yellow-500 text-gray-900;
+}
+
+.toast-info {
+    @apply bg-blue-500 text-white;
+}
+
+/* Table Styles */
+.table-container {
+    @apply overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700;
+}
+
+.table {
+    @apply min-w-full divide-y divide-gray-200 dark:divide-gray-700;
+}
+
+.table th {
+    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-800;
+}
+
+.table td {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100;
+}
+
+.table tbody tr {
+    @apply bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700;
+}
+
+.table tbody tr:nth-child(even) {
+    @apply bg-gray-50 dark:bg-gray-800/50;
+}
+
+/* Responsive Embeds */
+.aspect-video {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+}
+
+.aspect-video > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        @apply bg-white text-black;
+    }
+
+    a {
+        @apply no-underline;
+        color: inherit;
+    }
+}

@@ -9,8 +9,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.brand.urls')),
-    path('accounts/', include('apps.accounts.urls')),
-    path('investor/', include('apps.accounts.urls')),  # Investor dashboard placeholder
+    path('accounts/', include('apps.accounts.urls', namespace='accounts')),
+    path('investor/', include('apps.accounts.urls', namespace='investor')),  # Investor dashboard placeholder
 ]
 
 # Serve static files in development
