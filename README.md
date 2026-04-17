@@ -77,6 +77,7 @@ byers_brands_portal/
 │   └── target/release/
 │       └── libdid_rust.so # Compiled library
 ├── manage.py              # Django management script
+├── pyproject.toml         # Project metadata for uv
 ├── requirements.txt        # Python dependencies
 └── README.md              # This file
 ```
@@ -101,10 +102,10 @@ cd byers_brands_portal
 ### 2. Set Up Python Environment
 
 ```bash
-# Create virtual environment with uv
+# Create virtual environment with uv (optional - uv will auto-create one)
 uv venv
 
-# Activate the environment
+# Activate the environment (optional with uv run)
 # Linux/macOS
 source .venv/bin/activate
 
@@ -117,6 +118,9 @@ source .venv/bin/activate
 ```bash
 # Install Python dependencies using uv
 uv pip install -r requirements.txt
+
+# Or for development with dev tools (black, flake8, isort)
+uv pip install -r requirements.txt black flake8 isort
 ```
 
 ### 4. Build Rust DID Library
@@ -136,27 +140,27 @@ This generates `rust_did/target/release/libdid_rust.so`
 For development (SQLite):
 ```bash
 # Django will create db.sqlite3 automatically
-DJANGO_SETTINGS_MODULE=config.settings.dev python manage.py migrate
+uv run python manage.py migrate
 ```
 
 For production (PostgreSQL):
 ```bash
 # Edit config/settings/prod.py with your DB credentials
 createdb byers_brands
-DJANGO_SETTINGS_MODULE=config.settings.prod python manage.py migrate
+DJANGO_SETTINGS_MODULE=config.settings.prod uv run python manage.py migrate
 ```
 
 ### 6. Create Superuser (Optional)
 
 ```bash
-DJANGO_SETTINGS_MODULE=config.settings.dev python manage.py createsuperuser
+uv run python manage.py createsuperuser
 ```
 
 ### 7. Run Development Server
 
 ```bash
-# Use development settings
-DJANGO_SETTINGS_MODULE=config.settings.dev python manage.py runserver
+# Use development settings (default in manage.py)
+uv run python manage.py runserver
 ```
 
 Visit **http://localhost:8000** to view the site.
@@ -197,10 +201,10 @@ The portal supports both Rust and Python DID implementations:
 
 ```bash
 # Use Rust FFI library
-DID_BACKEND=rust python manage.py runserver
+DID_BACKEND=rust uv run python manage.py runserver
 
 # Use Python fallback (recommended for now)
-DID_BACKEND=python python manage.py runserver
+DID_BACKEND=python uv run python manage.py runserver
 ```
 
 ### Theme Mode
@@ -364,7 +368,7 @@ COPY . .
 RUN cd rust_did && cargo build --release
 
 # Collect static files
-RUN python manage.py collectstatic --noinput
+RUN uv run python manage.py collectstatic --noinput
 
 # Run
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
@@ -374,15 +378,15 @@ CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
 
 ```bash
 # Collect static files
-python manage.py collectstatic
+uv run python manage.py collectstatic
 
 # Run with Gunicorn
-pip install gunicorn
-gunicorn --bind 0.0.0.0:8000 --workers 4 config.wsgi:application
+uv pip install gunicorn
+uv run gunicorn --bind 0.0.0.0:8000 --workers 4 config.wsgi:application
 
 # Run with uWSGI
-pip install uwsgi
-uwsgi --http :8000 --module config.wsgi --workers 4
+uv pip install uwsgi
+uv run uwsgi --http :8000 --module config.wsgi --workers 4
 ```
 
 ### Nginx Configuration
@@ -427,46 +431,46 @@ server {
 ### Running Tests
 
 ```bash
-python manage.py test
+uv run python manage.py test
 ```
 
 ### Code Quality
 
 ```bash
 # Formatting
-black .
+uv run black .
 
 # Linting
-flake8 .
+uv run flake8 .
 
 # Import sorting
-isort .
+uv run isort .
 ```
 
 ### Creating Migrations
 
 ```bash
-python manage.py makemigrations
-python manage.py migrate
+uv run python manage.py makemigrations
+uv run python manage.py migrate
 ```
 
 ### Manage.py Commands
 
 ```bash
 # Create superuser
-python manage.py createsuperuser
+uv run python manage.py createsuperuser
 
 # Run server
-python manage.py runserver
+uv run python manage.py runserver
 
 # Shell
-python manage.py shell
+uv run python manage.py shell
 
 # Collect static
-python manage.py collectstatic
+uv run python manage.py collectstatic
 
 # Show URLs
-python manage.py show_urls
+uv run python manage.py show_urls
 ```
 
 ---
@@ -531,7 +535,7 @@ If you see `Could not load Rust DID library`:
 
 3. Fall back to Python implementation:
    ```bash
-   DID_BACKEND=python python manage.py runserver
+   DID_BACKEND=python uv run python manage.py runserver
    ```
 
 ### Database Issues
@@ -539,7 +543,7 @@ If you see `Could not load Rust DID library`:
 For SQLite errors:
 ```bash
 rm db.sqlite3
-python manage.py migrate
+uv run python manage.py migrate
 ```
 
 For PostgreSQL connection issues:
@@ -550,7 +554,7 @@ For PostgreSQL connection issues:
 ### Static Files Not Loading
 
 ```bash
-python manage.py collectstatic
+uv run python manage.py collectstatic
 # Ensure STATIC_ROOT is writable
 ```
 
@@ -559,7 +563,7 @@ python manage.py collectstatic
 1. Clear browser cache (Ctrl+Shift+R or Cmd+Shift+R)
 2. Check browser console for JavaScript errors
 3. Verify `/static/js/theme.js` loads in browser dev tools
-4. Ensure `DJANGO_SETTINGS_MODULE=config.settings.dev` is set
+4. Ensure you're using `uv run python manage.py runserver` or have `DJANGO_SETTINGS_MODULE=config.settings.dev` set
 
 ---
 
