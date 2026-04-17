@@ -33,7 +33,7 @@ class DIDRustWrapper:
         # Try multiple possible paths
         possible_paths = [
             lib_path,
-            str(Path(__file__).parent.parent.parent.parent / 'rust_did' / 'target' / 'release' / 'libdid_rust.so'),
+            str(Path(__file__).parent.parent.parent.parent.parent / 'rust_did' / 'target' / 'release' / 'libdid_rust.so'),
             '/home/user/CODE_BASE/byers_brands_portal/rust_did/target/release/libdid_rust.so',
         ]
         
@@ -125,29 +125,32 @@ class DIDRustWrapper:
         return None
 
 
-# Singleton instance
-_msgpack = DIDRustWrapper()
+# Singleton instance (lazy initialization)
+_msgpack = None
 
 
 def get_wrapper():
-    """Get the singleton wrapper instance."""
+    """Get the singleton wrapper instance (lazy initialization)."""
+    global _msgpack
+    if _msgpack is None:
+        _msgpack = DIDRustWrapper()
     return _msgpack
 
 
 # Convenience functions
 def generate_did(method='key'):
     """Generate a DID."""
-    return _msgpack.generate_did(method)
+    return get_wrapper().generate_did(method)
 
 
 def verify_vc(vc_json):
     """Verify a VC."""
-    return _msgpack.verify_vc(vc_json)
+    return get_wrapper().verify_vc(vc_json)
 
 
 def issue_vc(credential, did, private_key):
     """Issue a VC."""
-    return _msgpack.issue_vc(credential, did, private_key)
+    return get_wrapper().issue_vc(credential, did, private_key)
 
 
 # Python fallback implementation
@@ -194,13 +197,25 @@ def get_did_backend():
     """
     Get the appropriate DID backend based on settings.
     Returns Rust wrapper if available and configured, otherwise Python fallback.
+    
+    NOTE: Due to ctypes memory management complexity, we default to Python fallback
+    for production safety. To use Rust backend, explicitly set DID_BACKEND=rust and
+    ensure the library is properly built.
     """
-    backend = getattr(settings, 'DID_BACKEND', 'rust')
+    backend = getattr(settings, 'DID_BACKEND', 'python')  # Default to Python for safety
     
     if backend == 'python' or backend is False:
         return PythonDIDFallback()
     
     try:
-        return get_wrapper()
-    except:
+        # Try to load the Rust library
+        wrapper = DIDRustWrapper()
+        # Test it with a simple call
+        test_did = wrapper.generate_did('key')
+        if test_did and isinstance(test_did, str):
+            return wrapper
+        else:
+            return PythonDIDFallback()
+    except Exception as e:
+        print(f"Rust DID backend failed to initialize: {e}")
         return PythonDIDFallback()

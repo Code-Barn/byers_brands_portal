@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     # Local apps
+    'apps.core',
     'apps.brand',
     'apps.accounts',
 ]
@@ -34,12 +35,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'core.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'apps' / 'core' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -52,7 +53,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 DATABASES = {
@@ -91,7 +92,7 @@ USE_TZ = True
 # Static files
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [BASE_DIR / 'apps' / 'core' / 'static']
 
 # Media files
 MEDIA_URL = 'media/'
@@ -125,8 +126,8 @@ REFERRER_POLICY = 'same-origin'
 BRAND_COLOR = '#0064aa'
 
 # Rust/DID settings
-RUST_DID_LIB_PATH = os.path.join(BASE_DIR, 'rust_did', 'target', 'release', 'libdid_rust.so')
-DID_BACKEND = os.environ.get('DID_BACKEND', 'rust')  # 'rust' or 'python'
+RUST_DID_LIB_PATH = os.path.join(BASE_DIR.parent, 'rust_did', 'target', 'release', 'libdid_rust.so')
+DID_BACKEND = os.environ.get('DID_BACKEND', 'python')  # 'rust' or 'python' - python is safer for now
 
 # REST Framework
 REST_FRAMEWORK = {

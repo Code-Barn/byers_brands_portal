@@ -1,0 +1,14 @@
+[project]
+name = "byers-brands-portal"
+version = "0.1.0"
+description = "Byers Brands Web Portal - Django-based web application"
+requires-python = ">=3.10"
+
+dependencies = [
+    "Django>=4.2,<5.0",
+    "psycopg2-binary>=2.9.9",
+    "python-dotenv>=1.0.0",
+    "djangorestframework>=3.14.0",
+    "cryptography>=41.0.0",
+    "django-compressor>=4.4",
+]

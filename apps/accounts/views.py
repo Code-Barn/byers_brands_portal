@@ -52,7 +52,7 @@ def register(request):
             
             user.save()
             messages.success(request, 'Account created successfully! Please log in.')
-            return redirect('login')
+            return redirect('accounts:login')
     else:
         form = CustomUserCreationForm()
     

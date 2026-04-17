@@ -14,34 +14,68 @@ The Phase 1 implementation includes:
 
 ```
 byers_brands_portal/
-├── .venv/                  # Python virtual environment (uv)
-├── core/                   # Django project configuration
-│   ├── settings/           # Environment-specific settings
-│   │   ├── base.py        # Base settings (shared)
-│   │   ├── dev.py         # Development settings
-│   │   └── prod.py        # Production settings
+├── config/                  # Django project configuration
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── wsgi.py
 │   ├── urls.py            # Main URL configuration
-│   └── wsgi.py            # WSGI application
+│   └── settings/
+│       ├── base.py        # Base settings (shared)
+│       ├── dev.py         # Development settings
+│       └── prod.py        # Production settings
 ├── apps/                   # Django applications
+│   ├── core/              # Shared resources and base templates
+│   │   ├── __init__.py
+│   │   ├── apps.py
+│   │   ├── templates/
+│   │   │   └── base.html          # Base template with theme toggle
+│   │   └── static/
+│   │       ├── css/
+│   │       │   └── styles.css     # Custom styles with brand color
+│   │       ├── js/
+│   │       │   ├── theme.js       # Theme toggle functionality
+│   │       │   └── mobile-menu.js # Mobile navigation
+│   │       └── images/
+│   │           ├── LOGO.png       # Light mode logo
+│   │           ├── DM_LOGO.PNG    # Dark mode logo
+│   │           ├── LOGO_FULL.png  # Light mode full logo
+│   │           └── DM_LOGO_FULL.PNG # Dark mode full logo
 │   ├── brand/             # Brand showcase app
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
 │   │   ├── models.py      # BrandPage, Product models
-│   │   ├── views.py       # Page view handlers
 │   │   ├── urls.py        # Brand URL routing
-│   │   └── templates/     # Brand page templates
+│   │   ├── views.py       # Page view handlers
+│   │   └── templates/
+│   │       └── brand/
+│   │           ├── home.html
+│   │           ├── about.html
+│   │           ├── products.html
+│   │           ├── contact.html
+│   │           └── product_detail.html
 │   └── accounts/           # User authentication app
+│       ├── __init__.py
+│       ├── admin.py
+│       ├── apps.py
+│       ├── forms.py
 │       ├── models.py      # CustomUser model with DID support
+│       ├── did_rust_wrapper.py  # Rust FFI integration
+│       ├── urls.py
 │       ├── views.py       # Auth views (login, register, DID auth)
-│       ├── did_rust_wrapper.py  # Rust FFI wrapper
-│       └── templates/     # Auth templates
+│       └── templates/
+│           └── accounts/
+│               ├── login.html
+│               ├── register.html
+│               ├── did_login.html
+│               ├── profile.html
+│               └── investor_dashboard.html
 ├── rust_did/              # Rust DID library
 │   ├── Cargo.toml         # Rust project manifest
-│   ├── src/lib.rs        # FFI implementations
-│   └── target/release/   # Compiled library (libdid_rust.so)
-├── static/                 # Static files
-│   ├── css/               # Custom styles
-│   └── js/                # JavaScript utilities
-├── templates/              # Global templates
-│   └── base.html          # Base template with theme toggle
+│   ├── src/
+│   │   └── lib.rs        # FFI implementations
+│   └── target/release/
+│       └── libdid_rust.so # Compiled library
 ├── manage.py              # Django management script
 ├── requirements.txt        # Python dependencies
 └── README.md              # This file
@@ -83,9 +117,6 @@ source .venv/bin/activate
 ```bash
 # Install Python dependencies using uv
 uv pip install -r requirements.txt
-
-# Or if using traditional pip
-.venv/bin/pip install -r requirements.txt
 ```
 
 ### 4. Build Rust DID Library
@@ -104,34 +135,31 @@ This generates `rust_did/target/release/libdid_rust.so`
 
 For development (SQLite):
 ```bash
-# No setup needed - Django will create db.sqlite3
-python manage.py migrate
+# Django will create db.sqlite3 automatically
+DJANGO_SETTINGS_MODULE=config.settings.dev python manage.py migrate
 ```
 
 For production (PostgreSQL):
 ```bash
-# Edit core/settings/prod.py with your DB credentials
+# Edit config/settings/prod.py with your DB credentials
 createdb byers_brands
-python manage.py migrate
+DJANGO_SETTINGS_MODULE=config.settings.prod python manage.py migrate
 ```
 
 ### 6. Create Superuser (Optional)
 
 ```bash
-python manage.py createsuperuser
+DJANGO_SETTINGS_MODULE=config.settings.dev python manage.py createsuperuser
 ```
 
 ### 7. Run Development Server
 
 ```bash
 # Use development settings
-DJANGO_SETTINGS_MODULE=core.settings.dev python manage.py runserver
-
-# Or simply
-python manage.py runserver
+DJANGO_SETTINGS_MODULE=config.settings.dev python manage.py runserver
 ```
 
-Visit http://localhost:8000 to view the site.
+Visit **http://localhost:8000** to view the site.
 
 ---
 
@@ -139,9 +167,9 @@ Visit http://localhost:8000 to view the site.
 
 | Variable | Description | Default | Required |
 |----------|-------------|---------|----------|
-| `DJANGO_SETTINGS_MODULE` | Django settings module | `core.settings.dev` | Yes |
+| `DJANGO_SETTINGS_MODULE` | Django settings module | `config.settings.dev` | Yes |
 | `DJANGO_SECRET_KEY` | Django secret key | Generated | No |
-| `DID_BACKEND` | DID implementation | `rust` | No |
+| `DID_BACKEND` | DID implementation | `python` | No |
 | `DB_NAME` | Database name | `byers_brands` | No |
 | `DB_USER` | Database user | `postgres` | No |
 | `DB_PASSWORD` | Database password | `postgres` | No |
@@ -156,7 +184,7 @@ Create a `.env` file:
 ```bash
 DJANGO_SECRET_KEY=your-secret-key-here
 DEBUG=True
-DID_BACKEND=rust
+DID_BACKEND=python
 ```
 
 ---
@@ -168,10 +196,10 @@ DID_BACKEND=rust
 The portal supports both Rust and Python DID implementations:
 
 ```bash
-# Use Rust FFI library (default, recommended)
+# Use Rust FFI library
 DID_BACKEND=rust python manage.py runserver
 
-# Use Python fallback implementation
+# Use Python fallback (recommended for now)
 DID_BACKEND=python python manage.py runserver
 ```
 
@@ -203,7 +231,7 @@ DID_BACKEND=python python manage.py runserver
 | `/accounts/did-login/` | DID-based authentication |
 | `/accounts/logout/` | Logout |
 | `/accounts/profile/` | User profile |
-| `/accounts/dashboard/` | Investor dashboard (coming soon) |
+| `/accounts/dashboard/` | Investor dashboard (placeholder) |
 | `/investor/` | Investor dashboard alias |
 
 ### API Endpoints
@@ -228,6 +256,7 @@ DID_BACKEND=python python manage.py runserver
 - **CSS**: Tailwind CSS (CDN)
 - **JavaScript**: Vanilla JS
 - **Components**: Custom HTML templates
+- **Dark Mode**: Tailwind CSS class-based
 
 ### DID Implementation
 - **Language**: Rust 1.70+
@@ -237,7 +266,7 @@ DID_BACKEND=python python manage.py runserver
 
 ### Infrastructure
 - **Package Manager**: uv
-- **Static Files**: Django Compressor (optional)
+- **Static Files**: Django staticfiles framework
 - **Security**: HTTPS, CSRF protection, HSTS
 
 ---
@@ -284,33 +313,24 @@ If the Rust library is unavailable, a Python fallback is used automatically.
 
 ---
 
-## Customization
+## Dark Mode Implementation
 
-### Brand Colors
+### How It Works
 
-The brand color (#0064aa) is defined in multiple places:
+1. **HTML Class**: The `<html>` element gets a `dark` class when dark mode is active
+2. **Tailwind Classes**: All elements use `dark:` prefixed classes (e.g., `dark:bg-gray-900`)
+3. **Toggle Button**: Clicking the button in the top-right toggles the `dark` class
+4. **Local Storage**: Preference is saved and restored on page load
+5. **Logo Switching**: Light/dark mode logos switch automatically via CSS classes
 
-1. **CSS Variables** (`static/css/styles.css`):
-   ```css
-   :root {
-       --brand-blue: #0064aa;
-   }
-   ```
+### Customization
 
-2. **Django Settings** (`core/settings/base.py`):
-   ```python
-   BRAND_COLOR = '#0064aa'
-   ```
-
-3. **Tailwind Config** (via CDN): Custom colors can be added
-
-### Branding Assets
-
-To add your logos and assets:
-
-1. Place logo files in `static/images/`
-2. Update `templates/base.html` to reference your logo
-3. Update the brand name in navigation
+Base colors in `apps/core/static/css/styles.css`:
+```css
+:root {
+    --brand-blue: #0064aa;
+}
+```
 
 ---
 
@@ -347,7 +367,7 @@ RUN cd rust_did && cargo build --release
 RUN python manage.py collectstatic --noinput
 
 # Run
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "core.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
 ```
 
 ### Manual Deployment
@@ -358,11 +378,11 @@ python manage.py collectstatic
 
 # Run with Gunicorn
 pip install gunicorn
-gunicorn --bind 0.0.0.0:8000 --workers 4 core.wsgi:application
+gunicorn --bind 0.0.0.0:8000 --workers 4 config.wsgi:application
 
 # Run with uWSGI
 pip install uwsgi
-uwsgi --http :8000 --module core.wsgi --workers 4
+uwsgi --http :8000 --module config.wsgi --workers 4
 ```
 
 ### Nginx Configuration
@@ -504,9 +524,9 @@ If you see `Could not load Rust DID library`:
    cd ..
    ```
 
-2. Check the library path in `core/settings/base.py`:
+2. Check the library path in `config/settings/base.py`:
    ```python
-   RUST_DID_LIB_PATH = os.path.join(BASE_DIR, 'rust_did', 'target', 'release', 'libdid_rust.so')
+   RUST_DID_LIB_PATH = os.path.join(BASE_DIR.parent, 'rust_did', 'target', 'release', 'libdid_rust.so')
    ```
 
 3. Fall back to Python implementation:
@@ -523,7 +543,7 @@ python manage.py migrate
 ```
 
 For PostgreSQL connection issues:
-1. Verify credentials in `core/settings/prod.py`
+1. Verify credentials in `config/settings/prod.py`
 2. Ensure PostgreSQL is running
 3. Check firewall settings
 
@@ -534,11 +554,20 @@ python manage.py collectstatic
 # Ensure STATIC_ROOT is writable
 ```
 
+### Theme Toggle Not Working
+
+1. Clear browser cache (Ctrl+Shift+R or Cmd+Shift+R)
+2. Check browser console for JavaScript errors
+3. Verify `/static/js/theme.js` loads in browser dev tools
+4. Ensure `DJANGO_SETTINGS_MODULE=config.settings.dev` is set
+
 ---
 
 ## License
 
 MIT License
+
+---
 
 ## Contributing
 
@@ -552,14 +581,15 @@ MIT License
 ## Changelog
 
 ### Phase 1 (Current)
-- Initial Django project setup
+- Initial Django project setup with config/ structure
 - Brand showcase pages (Home, About, Products, Contact)
 - Rust/DID authentication integration
 - Light/Dark mode with brand color #0064aa
-- Responsible mobile design
+- Responsive mobile design
 - Investor dashboard placeholder
 - Custom user model with DID support
 - Static page templates with Tailwind CSS
+- Shared resources in apps/core/ (templates, static files)
 
 ### Next
 - Phase 2: Polly integration and investor tools

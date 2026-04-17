@@ -1,0 +1,101 @@
+Byers Brands Web Portal - Development Todo List
+=================================================
+
+Phase 1: Core Implementation (Current)
+--------------------------------------
+[COMPLETED] Django project structure (config/ instead of core/)
+[COMPLETED] Brand app with pages (Home, About, Products, Contact)
+[COMPLETED] Accounts app with Rust/DID authentication
+[COMPLETED] Base template with light/dark mode (#0064aa)
+[COMPLETED] Rust/DID Python wrapper for FFI integration
+[COMPLETED] Investor dashboard placeholder
+[COMPLETED] requirements.txt with Django 4.x dependencies
+[COMPLETED] Static files (CSS with Tailwind, JS for theme toggle)
+[COMPLETED] README documentation
+[COMPLETED] Restructure: core -> config, templates/static -> apps/core/
+
+Phase 1 Testing
+--------------
+[ ] Test all page loads (Home, About, Products, Contact)
+[ ] Test user registration
+[ ] Test user login/logout
+[ ] Test DID login flow
+[ ] Test dark mode toggle
+[ ] Test mobile responsiveness
+[ ] Verify logo switching (light/dark)
+[ ] Test email/password authentication
+[ ] Verify static file serving
+[ ] Check database migrations
+
+Phase 2: Investor Tools
+-------------------------
+[ ] Expand investor dashboard
+[ ] Portfolio tracking backend
+[ ] Real-time analytics
+[ ] Document management system
+[ ] Investment opportunities listing
+[ ] ROI calculator
+[ ] Polly integration (separate project)
+[ ] Multi-signature wallet support
+[ ] Transaction signing via DID
+[ ] Governance voting features
+
+Phase 3: Enhanced Features
+---------------------------
+[ ] Admin dashboard for content management
+[ ] CRM integration (HubSpot/Salesforce)
+[ ] Email notification system
+[ ] API v2 with GraphQL
+[ ] WebAuthn authentication
+[ ] Magic link authentication
+[ ] Social login (optional)
+[ ] Two-factor authentication
+[ ] Search functionality
+[ ] Advanced filtering/sorting
+
+Infrastructure
+--------------
+[ ] Docker containerization
+[ ] CI/CD pipeline setup
+[ ] Production deployment guide
+[ ] Monitoring/Logging setup
+[ ] Backup strategy
+[ ] Scaling considerations
+
+Code Quality
+------------
+[ ] Run code formatting (black, isort)
+[ ] Add linting (flake8)
+[ ] Write unit tests
+[ ] Add integration tests
+[ ] Document all API endpoints
+[ ] Update comments/docstrings
+
+Documentation
+--------------
+[ ] Update README with correct project structure
+[ ] Add setup instructions for new developers
+[ ] Document all environment variables
+[ ] Create API documentation
+[ ] Write deployment guide
+[ ] Add architecture diagram
+
+Bug Fixes & Improvements
+-------------------------
+[ ] Fix theme toggle button (ensure dark mode works)
+[ ] Verify static files load in production
+[ ] Update RUST_DID_LIB_PATH to work with new structure
+[ ] Ensure all URLs use proper namespacing
+[ ] Add proper error pages (404, 500)
+[ ] Improve form validation
+[ ] Add loading states
+
+Future Considerations
+--------------------
+- Third-party API integrations
+- Payment gateway setup
+- Multi-language support (i18n)
+- Accessibility audit (WCAG AA)
+- Performance optimization
+- Security audit
+- SEO improvements
