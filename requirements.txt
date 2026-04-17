@@ -1,0 +1,20 @@
+# Django 4.x
+Django>=4.2,<5.0
+
+# Database
+psycopg2-binary>=2.9.9
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# Security
+djangorestframework>=3.14.0
+cryptography>=41.0.0
+
+# Static files
+django-compressor>=4.4
+
+# Development
+black>=23.7.0
+flake8>=6.0.0
+isort>=5.12.0
