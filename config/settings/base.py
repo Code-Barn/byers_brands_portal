@@ -19,13 +19,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     # Local apps
     'apps.core',
     'apps.brand',
     'apps.accounts',
+    'apps.investor',
+    'apps.polly_client',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -129,11 +133,22 @@ BRAND_COLOR = '#0064aa'
 RUST_DID_LIB_PATH = os.path.join(BASE_DIR.parent, 'rust_did', 'target', 'release', 'libdid_rust.so')
 DID_BACKEND = os.environ.get('DID_BACKEND', 'python')  # 'rust' or 'python' - python is safer for now
 
+# Polly integration settings
+POLLY_API_URL = os.environ.get('POLLY_API_URL', 'http://localhost:8001')
+POLLY_EMBEDDING_APP = 'byers-brands-llc'
+
+# Cactus Comments settings
+CACTUS_HOMESERVER_URL = 'https://matrix.cactus.chat:8448'
+CACTUS_SERVER_NAME = 'cactus.chat'
+CACTUS_SITE_NAME = 'byers-brands-llc'
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'True') == 'True'
+
 # REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.CsrfViewAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',

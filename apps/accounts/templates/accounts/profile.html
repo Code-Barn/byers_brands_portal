@@ -155,11 +155,23 @@
                         <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
                             <div>
                                 <h4 class="font-medium text-gray-900 dark:text-white">Two-Factor Authentication</h4>
-                                <p class="text-sm text-gray-600 dark:text-gray-400">Not enabled</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    {% if user.mfa_enabled %}
+                                    <span class="text-green-600 dark:text-green-400">Enabled</span>
+                                    {% else %}
+                                    Not enabled
+                                    {% endif %}
+                                </p>
                             </div>
-                            <a href="#" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
+                            {% if user.mfa_enabled %}
+                            <a href="{% url 'accounts:mfa_disable' %}" class="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium">
+                                Disable &rarr;
+                            </a>
+                            {% else %}
+                            <a href="{% url 'accounts:mfa_setup' %}" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
                                 Enable &rarr;
                             </a>
+                            {% endif %}
                         </div>
 
                         <div class="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">

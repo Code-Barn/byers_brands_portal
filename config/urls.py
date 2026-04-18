@@ -10,7 +10,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.brand.urls')),
     path('accounts/', include('apps.accounts.urls', namespace='accounts')),
-    path('investor/', include('apps.accounts.urls', namespace='investor')),  # Investor dashboard placeholder
+    path('investor/', include('apps.investor.urls', namespace='investor')),
+    path('polly/', include('apps.polly_client.urls', namespace='polly_client')),
 ]
 
 # Serve static files in development

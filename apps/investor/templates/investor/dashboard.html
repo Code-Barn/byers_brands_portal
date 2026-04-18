@@ -1,0 +1,634 @@
+{% extends 'base.html' %}
+
+{% block title %}Investor Dashboard - Byers Brands{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+    .tab-active {
+        border-bottom: 2px solid {{ brand_color }};
+        color: {{ brand_color }};
+    }
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                    Investor Dashboard
+                </h1>
+                <p class="text-gray-600 dark:text-gray-400 mt-1">
+                    Welcome back, {{ user.username }}
+                </p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-500 dark:text-gray-400">
+                    Last updated: {{ portfolio.last_updated|date:"M d, Y H:i" }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <div class="text-gray-400 dark:text-gray-500 text-sm mb-1">Total Portfolio Value</div>
+            <div class="text-3xl font-bold text-gray-900 dark:text-white">${{ portfolio.total_value|default:"0"|floatformat:2 }}</div>
+            <div class="text-sm mt-2 {% if portfolio.total_returns >= 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                {% if portfolio.total_returns >= 0 %}+{% else %}{% endif %}${{ portfolio.total_returns|default:"0"|floatformat:2 }} ({{ portfolio.total_returns|default:0|div:portfolio.total_invested|default:1|multiply:100|floatformat:1 }}%)
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <div class="text-gray-400 dark:text-gray-500 text-sm mb-1">Total Invested</div>
+            <div class="text-3xl font-bold text-gray-900 dark:text-white">${{ portfolio.total_invested|default:"0"|floatformat:2 }}</div>
+            <div class="text-gray-500 dark:text-gray-400 text-sm mt-2">Across {{ investments.count|default:0 }} investments</div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <div class="text-gray-400 dark:text-gray-500 text-sm mb-1">Documents</div>
+            <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ documents.count|default:0 }}</div>
+            <div class="text-blue-600 dark:text-blue-400 text-sm mt-2">View all</div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <div class="text-gray-400 dark:text-gray-500 text-sm mb-1">Active Opportunities</div>
+            <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ opportunities.count|default:0 }}</div>
+            <div class="text-blue-600 dark:text-blue-400 text-sm mt-2">Explore</div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
+        <nav class="flex space-x-8">
+            <button onclick="switchTab('portfolio')" id="tab-portfolio" class="tab-active py-4 px-1 border-b-2 font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                Portfolio
+            </button>
+            <button onclick="switchTab('analytics')" id="tab-analytics" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                Analytics
+            </button>
+            <button onclick="switchTab('documents')" id="tab-documents" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                Documents
+            </button>
+            <button onclick="switchTab('opportunities')" id="tab-opportunities" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                Opportunities
+            </button>
+            <button onclick="switchTab('polls')" id="tab-polls" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                Polls
+            </button>
+            <button onclick="switchTab('calculator')" id="tab-calculator" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                ROI Calculator
+            </button>
+        </nav>
+    </div>
+
+    <!-- Tab Content: Portfolio -->
+    <div id="content-portfolio" class="tab-content animate-fade-in">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Your Investments</h2>
+                        <button onclick="showAddInvestmentModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                            + Add Investment
+                        </button>
+                    </div>
+                    {% if investments %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead>
+                                <tr class="border-b border-gray-200 dark:border-gray-700">
+                                    <th class="text-left py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Name</th>
+                                    <th class="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Amount</th>
+                                    <th class="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Current Value</th>
+                                    <th class="text-right py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Returns</th>
+                                    <th class="text-center py-3 px-4 text-sm font-medium text-gray-500 dark:text-gray-400">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for inv in investments %}
+                                <tr class="border-b border-gray-100 dark:border-gray-700">
+                                    <td class="py-3 px-4 text-gray-900 dark:text-white">{{ inv.name }}</td>
+                                    <td class="py-3 px-4 text-gray-900 dark:text-white text-right">${{ inv.amount|floatformat:2 }}</td>
+                                    <td class="py-3 px-4 text-gray-900 dark:text-white text-right">${{ inv.current_value|floatformat:2 }}</td>
+                                    <td class="py-3 px-4 text-right {% if inv.returns_percentage >= 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                                        {{ inv.returns_percentage|floatformat:1 }}%
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="px-2 py-1 text-xs rounded-full {% if inv.status == 'active' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200{% elif inv.status == 'closed' %}bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300{% else %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200{% endif %}">
+                                            {{ inv.status|title }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                        <p>No investments yet. Add your first investment to get started.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Allocation</h3>
+                    <div class="h-64">
+                        <canvas id="allocationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Analytics -->
+    <div id="content-analytics" class="tab-content hidden animate-fade-in">
+        <div class="grid lg:grid-cols-2 gap-8">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Portfolio Value Over Time</h2>
+                <div class="h-64">
+                    <canvas id="portfolioChart"></canvas>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Returns Analysis</h2>
+                <div class="h-64">
+                    <canvas id="returnsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Performance Metrics</h2>
+                <button onclick="refreshAnalytics()" class="text-blue-600 dark:text-blue-400 text-sm hover:underline">
+                    Refresh
+                </button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Total Return</div>
+                    <div class="text-xl font-bold text-gray-900 dark:text-white">${{ portfolio.total_returns|default:"0"|floatformat:2 }}</div>
+                </div>
+                <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Return %</div>
+                    <div class="text-xl font-bold {% if portfolio.total_returns >= 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                        {{ portfolio.total_returns|default:0|div:portfolio.total_invested|default:1|multiply:100|floatformat:1 }}%
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Investments</div>
+                    <div class="text-xl font-bold text-gray-900 dark:text-white">{{ investments.count|default:0 }}</div>
+                </div>
+                <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Avg per Investment</div>
+                    <div class="text-xl font-bold text-gray-900 dark:text-white">
+                        ${{ portfolio.total_invested|default:0|div:investments.count|default:1|floatformat:2 }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Documents -->
+    <div id="content-documents" class="tab-content hidden animate-fade-in">
+        <div class="grid lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-1">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Upload Document</h2>
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
+                            <input type="text" name="title" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
+                            <select name="document_type" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white">
+                                <option value="tax">Tax Document</option>
+                                <option value="statement">Statement</option>
+                                <option value="contract">Contract</option>
+                                <option value="report">Report</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">File (Max 10MB)</label>
+                            <input type="file" name="file" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                            <textarea name="description" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Upload
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="lg:col-span-2">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Your Documents</h2>
+                    {% if documents %}
+                    <div class="space-y-3">
+                        {% for doc in documents %}
+                        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-gray-900 dark:text-white">{{ doc.title }}</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ doc.document_type|title }} - {{ doc.file_size|filesizeformat }}</div>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <a href="{% url 'investor:download_document' doc.id %}" class="px-3 py-1 text-sm text-blue-600 dark:text-blue-400 hover:underline">Download</a>
+                                <button onclick="deleteDocument({{ doc.id }})" class="px-3 py-1 text-sm text-red-600 dark:text-red-400 hover:underline">Delete</button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                        <p>No documents uploaded yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: Opportunities -->
+    <div id="content-opportunities" class="tab-content hidden animate-fade-in">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for opp in opportunities %}
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                <div class="flex justify-between items-start mb-3">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ opp.title }}</h3>
+                    <span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                        {{ opp.get_status_display }}
+                    </span>
+                </div>
+                <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">{{ opp.description|truncatechars:150 }}</p>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 dark:text-gray-400">Min Investment</span>
+                        <span class="font-medium text-gray-900 dark:text-white">${{ opp.min_investment|floatformat:2 }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 dark:text-gray-400">Expected Returns</span>
+                        <span class="font-medium text-green-600 dark:text-green-400">{{ opp.expected_returns_percentage|floatformat:1 }}%</span>
+                    </div>
+                    {% if opp.deadline %}
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 dark:text-gray-400">Deadline</span>
+                        <span class="font-medium text-gray-900 dark:text-white">{{ opp.deadline|date:"M d, Y" }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <button class="w-full mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    Invest
+                </button>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-12 text-gray-500 dark:text-gray-400">
+                <p>No opportunities available at this time.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Tab Content: Polls -->
+    <div id="content-polls" class="tab-content hidden animate-fade-in">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Polly Polls</h2>
+            <div id="polls-container">
+                <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+                    <p>Loading polls...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Content: ROI Calculator -->
+    <div id="content-calculator" class="tab-content hidden animate-fade-in">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-8">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">ROI Calculator</h2>
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Initial Investment ($)</label>
+                        <input type="number" id="initialInvestment" value="10000" min="0" step="100"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white text-lg"
+                            oninput="calculateROI()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Monthly Contribution ($)</label>
+                        <input type="number" id="monthlyContribution" value="500" min="0" step="50"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white text-lg"
+                            oninput="calculateROI()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Expected Annual Return (%)</label>
+                        <input type="number" id="expectedReturn" value="7" min="0" max="100" step="0.5"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white text-lg"
+                            oninput="calculateROI()">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Investment Period (Years)</label>
+                        <input type="number" id="investmentYears" value="10" min="1" max="50" step="1"
+                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white text-lg"
+                            oninput="calculateROI()">
+                    </div>
+                </div>
+
+                <div class="mt-8 p-6 bg-gray-50 dark:bg-gray-900 rounded-xl">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Results</h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Future Value</div>
+                            <div class="text-3xl font-bold text-green-600 dark:text-green-400" id="futureValue">$0</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Total Contributed</div>
+                            <div class="text-2xl font-bold text-gray-900 dark:text-white" id="totalContributed">$0</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Total Interest Earned</div>
+                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="totalInterest">$0</div>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">Total Return %</div>
+                            <div class="text-2xl font-bold text-purple-600 dark:text-purple-400" id="totalReturnPct">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Investment Modal -->
+<div id="addInvestmentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Add Investment</h3>
+        <form id="addInvestmentForm">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                <input type="text" name="name" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount ($)</label>
+                <input type="number" name="amount" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Value ($)</label>
+                <input type="number" name="current_value" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date Invested</label>
+                <input type="date" name="date_invested" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white" required>
+            </div>
+            <div class="flex space-x-3">
+                <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add</button>
+                <button type="button" onclick="closeAddInvestmentModal()" class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let allocationChart, portfolioChart, returnsChart;
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById('content-' + tabName).classList.remove('hidden');
+
+        document.querySelectorAll('[id^="tab-"]').forEach(el => {
+            el.classList.remove('tab-active');
+            el.classList.add('border-transparent');
+        });
+        const activeTab = document.getElementById('tab-' + tabName);
+        activeTab.classList.add('tab-active');
+        activeTab.classList.remove('border-transparent');
+
+        if (tabName === 'portfolio') initAllocationChart();
+        if (tabName === 'analytics') initAnalyticsCharts();
+        if (tabName === 'polls') loadPolls();
+    }
+
+    function initAllocationChart() {
+        const ctx = document.getElementById('allocationChart');
+        if (!ctx) return;
+        if (allocationChart) allocationChart.destroy();
+
+        allocationChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Stocks', 'Bonds', 'Real Estate', 'Crypto', 'Cash'],
+                datasets: [{
+                    data: [45, 25, 15, 10, 5],
+                    backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#6B7280']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    function initAnalyticsCharts() {
+        const portfolioCtx = document.getElementById('portfolioChart');
+        const returnsCtx = document.getElementById('returnsChart');
+        if (!portfolioCtx || !returnsCtx) return;
+
+        if (portfolioChart) portfolioChart.destroy();
+        if (returnsChart) returnsChart.destroy();
+
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+        portfolioChart = new Chart(portfolioCtx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Portfolio Value',
+                    data: [10000, 10500, 11200, 10800, 11500, 12000],
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: false }
+                }
+            }
+        });
+
+        returnsChart = new Chart(returnsCtx, {
+            type: 'bar',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Monthly Return %',
+                    data: [2.1, 3.5, -1.8, 4.2, 2.1, 3.8],
+                    backgroundColor: '#10B981'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
+
+    function refreshAnalytics() {
+        initAnalyticsCharts();
+    }
+
+    function showAddInvestmentModal() {
+        document.getElementById('addInvestmentModal').classList.remove('hidden');
+    }
+
+    function closeAddInvestmentModal() {
+        document.getElementById('addInvestmentModal').classList.add('hidden');
+    }
+
+    document.getElementById('addInvestmentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        try {
+            const response = await fetch('{% url "investor:api_investments" %}', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                body: formData
+            });
+            if (response.ok) {
+                closeAddInvestmentModal();
+                location.reload();
+            } else {
+                alert('Failed to add investment');
+            }
+        } catch (err) {
+            alert('Error: ' + err);
+        }
+    });
+
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        try {
+            const response = await fetch('{% url "investor:upload_document" %}', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                body: formData
+            });
+            if (response.ok) {
+                location.reload();
+            } else {
+                const data = await response.json();
+                alert(data.error || 'Upload failed');
+            }
+        } catch (err) {
+            alert('Error: ' + err);
+        }
+    });
+
+    async function deleteDocument(id) {
+        if (!confirm('Delete this document?')) return;
+        try {
+            const response = await fetch(`/investor/documents/${id}/delete/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' }
+            });
+            if (response.ok) location.reload();
+        } catch (err) {
+            alert('Error: ' + err);
+        }
+    }
+
+    function calculateROI() {
+        const initial = parseFloat(document.getElementById('initialInvestment').value) || 0;
+        const monthly = parseFloat(document.getElementById('monthlyContribution').value) || 0;
+        const annualReturn = parseFloat(document.getElementById('expectedReturn').value) || 0;
+        const years = parseInt(document.getElementById('investmentYears').value) || 1;
+
+        const months = years * 12;
+        const monthlyRate = annualReturn / 100 / 12;
+
+        let futureValue = initial * Math.pow(1 + monthlyRate, months);
+        for (let i = 0; i < months; i++) {
+            futureValue += monthly * Math.pow(1 + monthlyRate, months - i - 1);
+        }
+
+        const totalContributed = initial + (monthly * months);
+        const totalInterest = futureValue - totalContributed;
+        const totalReturnPct = totalContributed > 0 ? (totalInterest / totalContributed) * 100 : 0;
+
+        document.getElementById('futureValue').textContent = '$' + futureValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('totalContributed').textContent = '$' + totalContributed.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('totalInterest').textContent = '$' + totalInterest.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('totalReturnPct').textContent = totalReturnPct.toFixed(1) + '%';
+    }
+
+    async function loadPolls() {
+        const container = document.getElementById('polls-container');
+        const userDid = '{{ user.did|default:"" }}';
+
+        try {
+            const response = await fetch(`/polly/api/polls/?embedding_app=byers-brands-llc&user_did=${userDid}&theme=${document.documentElement.classList.contains('dark') ? 'dark' : 'light'}`);
+            const data = await response.json();
+
+            if (data.polls && data.polls.length > 0) {
+                container.innerHTML = data.polls.map(poll => `
+                    <div class="p-4 mb-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                        <h3 class="font-semibold text-gray-900 dark:text-white">${poll.title}</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${poll.description || ''}</p>
+                        <div class="mt-3 space-y-2">
+                            ${poll.options.map(opt => `
+                                <div class="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded">
+                                    <span class="text-gray-700 dark:text-gray-300">${opt.text}</span>
+                                    <span class="text-sm text-gray-500">${opt.votes} votes</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="mt-2 text-sm text-gray-500">${poll.total_votes} total votes</div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-gray-500 text-center">No polls available.</p>';
+            }
+        } catch (err) {
+            container.innerHTML = '<p class="text-red-500">Failed to load polls. Make sure Polly is running.</p>';
+        }
+    }
+
+    calculateROI();
+    initAllocationChart();
+</script>
+{% endblock %}

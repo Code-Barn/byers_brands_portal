@@ -1,0 +1,94 @@
+{% load static %}
+<div class="poll-widget p-4 bg-gray-50 dark:bg-gray-900 rounded-lg" data-poll-id="{{ poll.id }}">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ poll.title }}</h3>
+    {% if poll.description %}
+    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">{{ poll.description }}</p>
+    {% endif %}
+
+    <div class="poll-options space-y-2">
+        {% for option in poll.options %}
+        <div class="poll-option {% if poll.total_votes > 0 %}has-votes{% endif %}">
+            <button
+                class="w-full text-left p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-colors poll-vote-btn"
+                data-option-id="{{ option.id }}"
+                data-poll-id="{{ poll.id }}"
+            >
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-700 dark:text-gray-300">{{ option.text }}</span>
+                    {% if poll.total_votes > 0 %}
+                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ option.percentage|floatformat:0 }}%</span>
+                    {% endif %}
+                </div>
+                {% if poll.total_votes > 0 %}
+                <div class="mt-2 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div class="h-full bg-blue-600 dark:bg-blue-500 transition-all duration-300" style="width: {{ option.percentage|floatformat:0 }}%"></div>
+                </div>
+                {% endif %}
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+        {{ poll.total_votes }} vote{{ poll.total_votes|pluralize }}
+        {% if poll.is_active_now %}
+        <span class="ml-2 text-green-600 dark:text-green-400">Active</span>
+        {% else %}
+        <span class="ml-2 text-gray-400">Closed</span>
+        {% endif %}
+    </div>
+
+    {% if poll.is_proposal and poll.funding_progress %}
+    <div class="mt-3 p-3 bg-blue-50 dark:bg-blue-900 rounded-lg">
+        <div class="text-sm text-blue-800 dark:text-blue-200 mb-1">Funding Progress</div>
+        <div class="h-2 bg-blue-200 dark:bg-blue-800 rounded-full overflow-hidden">
+            <div class="h-full bg-blue-600" style="width: {{ poll.funding_progress }}%"></div>
+        </div>
+        <div class="text-xs text-blue-600 dark:text-blue-400 mt-1">{{ poll.funding_progress|floatformat:0 }}% funded</div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const widget = document.querySelector('[data-poll-id="{{ poll.id }}"]');
+    const buttons = widget.querySelectorAll('.poll-vote-btn');
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const pollId = this.dataset.pollId;
+            const optionId = this.dataset.optionId;
+
+            // In production, this would require proper DID authentication
+            // For now, show a message
+            if (!window.userDid) {
+                alert('Please sign in with DID to vote');
+                return;
+            }
+
+            try {
+                const response = await fetch('/polly/api/vote/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        poll_id: pollId,
+                        option_id: optionId,
+                        signature: '' // Would be generated client-side
+                    })
+                });
+                const data = await response.json();
+                if (data.success || data.vote_id) {
+                    location.reload();
+                } else {
+                    alert(data.error || 'Vote failed');
+                }
+            } catch(err) {
+                alert('Error: ' + err);
+            }
+        });
+    });
+});
+</script>

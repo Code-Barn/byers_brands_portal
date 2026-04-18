@@ -10,6 +10,15 @@ python-dotenv>=1.0.0
 # Security
 djangorestframework>=3.14.0
 cryptography>=41.0.0
+pyotp>=2.9.0
+qrcode>=7.4.2
+Pillow>=10.0.0
+
+# HTTP requests for external APIs
+requests>=2.31.0
+
+# CORS headers for API access
+django-cors-headers>=4.3.0
 
 # Static files
 django-compressor>=4.4
@@ -18,3 +27,6 @@ django-compressor>=4.4
 black>=23.7.0
 flake8>=6.0.0
 isort>=5.12.0
+
+# Playwright for testing
+playwright>=1.40.0

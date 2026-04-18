@@ -1,0 +1,19 @@
+{% load static %}
+<div class="poll-list">
+    {% if polls %}
+    <div class="grid gap-4">
+        {% for poll in polls %}
+        <div class="poll-item p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+            {% include 'polly_client/poll_widget.html' %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+        <p>No polls available at this time.</p>
+        {% if user.is_authenticated and user.did %}
+        <p class="text-sm mt-2">Your DID: {{ user.did|truncatechars:20 }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>

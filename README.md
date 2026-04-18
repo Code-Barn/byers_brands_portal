@@ -477,30 +477,31 @@ uv run python manage.py show_urls
 
 ## Future Direction (Phase 2)
 
-The following features are planned for Phase 2:
+The following features are now implemented in Phase 2, Week 1:
 
-### Polly Integration
-- Multi-signature wallet support
-- Transaction signing via DID
-- Governance voting
+### Completed - Investor Tools
+- Portfolio tracking with Django models and REST API
+- Real-time analytics dashboard with Chart.js
+- Document management (upload/download, 10MB limit, PDF/DOC/images)
+- Investment opportunities listing
+- ROI calculator with real-time calculation
 
-### Investor Tools
-- Portfolio tracking
-- Real-time analytics dashboard
-- Document management
-- Investment opportunities
-- ROI calculator
+### Completed - Polly Integration
+- Remote API client for Polly polls (`apps/polly_client/`)
+- Embeddable poll widgets with scope-aware filtering
+- Cactus Comments integration for discussion threads
+- Theme-aware rendering (light/dark mode)
 
-### Enhanced Authentication
+### In Progress - Authentication
+- Full DID-Rust authentication flow
+- Session-based DID persistence
+- API endpoints for VC verification
+
+### Next
+- Phase 2, Week 2+ features (as needed)
 - WebAuthn support
-- Magic links
-- Social login (optional)
-
-### Additional Features
+- Enhanced security
 - Admin dashboard
-- CRM integration
-- Email notifications
-- API v2 (GraphQL)
 
 ---
 
@@ -583,6 +584,23 @@ MIT License
 ---
 
 ## Changelog
+
+### Phase 2, Week 1 (Current)
+- **Investor Dashboard Expansion**:
+  - Portfolio tracking with Investment model and REST API
+  - Real-time analytics with Chart.js integration
+  - Document management with file upload/download
+  - Investment opportunities listing
+  - Interactive ROI calculator
+- **Polly Integration**:
+  - `apps/polly_client/` for remote Polly API integration
+  - Scope-aware poll widgets with `byers-brands-llc` embedding app
+  - Cactus Comments integration for poll discussions
+- **Playwright Test Suite**:
+  - `tests/playwright/` with conftest, test_dashboard.py, test_polly.py, test_auth.py
+- **DID-Rust Authentication**:
+  - Full integration with existing DID backend
+  - Session persistence of DID for Polly API calls
 
 ### Phase 1 (Current)
 - Initial Django project setup with config/ structure

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify MFA - Byers Brands{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto px-4 py-12">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+            Enter MFA Code
+        </h1>
+
+        <p class="text-gray-600 dark:text-gray-400 mb-6 text-center">
+            Enter the 6-digit code from your authenticator app to continue.
+        </p>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Authentication Code
+                </label>
+                <input type="text" name="code" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white text-center text-2xl font-mono tracking-widest" placeholder="000000" maxlength="6" required>
+            </div>
+
+            <div class="text-center">
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Or use a backup code:</p>
+                <input type="text" name="backup_code" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white text-center font-mono" placeholder="BACKUP-CODE" maxlength="8">
+            </div>
+
+            <button type="submit" class="w-full px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                Verify
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
