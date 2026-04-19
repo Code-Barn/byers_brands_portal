@@ -12,6 +12,7 @@ urlpatterns = [
     path('accounts/', include('apps.accounts.urls', namespace='accounts')),
     path('investor/', include('apps.investor.urls', namespace='investor')),
     path('polly/', include('apps.polly_client.urls', namespace='polly_client')),
+    path('feedback/', include('apps.feedback.urls', namespace='feedback')),
 ]
 
 # Serve static files in development

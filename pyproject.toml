@@ -12,3 +12,8 @@ dependencies = [
     "cryptography>=41.0.0",
     "django-compressor>=4.4",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3",
+]

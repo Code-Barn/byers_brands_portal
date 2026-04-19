@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.investor',
     'apps.polly_client',
+    'apps.feedback',
 ]
 
 MIDDLEWARE = [

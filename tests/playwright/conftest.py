@@ -3,35 +3,25 @@ Playwright configuration and fixtures for Byers Brands Portal tests.
 """
 import os
 import sys
-import asyncio
+import re
 from pathlib import Path
 
 import pytest
 from django.test import Client
 from django.contrib.auth import get_user_model
 
-# Add project to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
 
 
 @pytest.fixture(scope='session')
-def django_db_setup():
-    """Setup Django database for tests."""
-    from django.conf import settings
-    settings.DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
-    }
-
-
-@pytest.fixture(scope='session')
-def event_loop():
-    """Create an event loop for async tests."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+def browser():
+    """Launch a browser for tests."""
+    from playwright.sync_api import sync_playwright
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        yield browser
+        browser.close()
 
 
 @pytest.fixture
@@ -76,7 +66,7 @@ def base_url():
 @pytest.fixture
 def theme():
     """Get current theme preference."""
-    return 'light'  # Default, overridden in tests
+    return 'light'
 
 
 @pytest.fixture
@@ -87,12 +77,6 @@ def polly_api_url():
 
 def pytest_configure(config):
     """Configure pytest with custom markers."""
-    config.addinivalue_line(
-        'markers', 'slow: marks tests as slow (deselect with "-m \\"not slow\\"")'
-    )
-    config.addinivalue_line(
-        'markers', 'auth: marks tests requiring authentication'
-    )
-    config.addinivalue_line(
-        'markers', 'polly: marks tests requiring Polly integration'
-    )
+    config.addinivalue_line('markers', 'slow: marks tests as slow')
+    config.addinivalue_line('markers', 'auth: marks tests requiring authentication')
+    config.addinivalue_line('markers', 'polly: marks tests requiring Polly integration')

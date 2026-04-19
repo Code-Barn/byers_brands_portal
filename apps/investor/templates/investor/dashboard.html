@@ -69,25 +69,25 @@
         </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
-        <nav class="flex space-x-8">
-            <button onclick="switchTab('portfolio')" id="tab-portfolio" class="tab-active py-4 px-1 border-b-2 font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+    <!-- Tabs - Scrollable on mobile -->
+    <div class="border-b border-gray-200 dark:border-gray-700 mb-6 overflow-x-auto">
+        <nav class="flex space-x-8 min-w-max" role="tablist" aria-label="Dashboard sections">
+            <button onclick="switchTab('portfolio')" id="tab-portfolio" class="tab-active py-4 px-1 border-b-2 font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap" role="tab" aria-selected="true" aria-controls="content-portfolio">
                 Portfolio
             </button>
-            <button onclick="switchTab('analytics')" id="tab-analytics" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+            <button onclick="switchTab('analytics')" id="tab-analytics" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap" role="tab" aria-selected="false" aria-controls="content-analytics">
                 Analytics
             </button>
-            <button onclick="switchTab('documents')" id="tab-documents" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+            <button onclick="switchTab('documents')" id="tab-documents" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap" role="tab" aria-selected="false" aria-controls="content-documents">
                 Documents
             </button>
-            <button onclick="switchTab('opportunities')" id="tab-opportunities" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+            <button onclick="switchTab('opportunities')" id="tab-opportunities" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap" role="tab" aria-selected="false" aria-controls="content-opportunities">
                 Opportunities
             </button>
-            <button onclick="switchTab('polls')" id="tab-polls" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+            <button onclick="switchTab('polls')" id="tab-polls" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap" role="tab" aria-selected="false" aria-controls="content-polls">
                 Polls
             </button>
-            <button onclick="switchTab('calculator')" id="tab-calculator" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+            <button onclick="switchTab('calculator')" id="tab-calculator" class="py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 whitespace-nowrap" role="tab" aria-selected="false" aria-controls="content-calculator">
                 ROI Calculator
             </button>
         </nav>
