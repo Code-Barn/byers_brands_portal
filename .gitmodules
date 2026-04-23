@@ -1,3 +1,6 @@
 [submodule "rust_did"]
 	path = rust_did
 	url = git@github.com:Code-Barn/did_rust.git
+[submodule "did_rust"]
+	path = did_rust
+	url = git@github.com:Code-Barn/did_rust
