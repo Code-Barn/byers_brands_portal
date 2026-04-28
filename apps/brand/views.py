@@ -1,15 +1,17 @@
 """Views for Brand app."""
 from django.shortcuts import render
 from django.conf import settings
-from .models import BrandPage, Product
+from .models import BrandPage, Product, Project
 
 
 def home(request):
     """Home page view."""
     featured_products = Product.objects.filter(is_featured=True).order_by('order')[:4]
+    projects = Project.objects.all().order_by('order')
     return render(request, 'brand/home.html', {
         'page': 'home',
         'featured_products': featured_products,
+        'projects': projects,
         'brand_color': getattr(settings, 'BRAND_COLOR', '#0064aa')
     })
 

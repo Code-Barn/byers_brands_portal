@@ -40,3 +40,23 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Project(models.Model):
+    """Ecosystem projects (Polly, Namechart, etc.)."""
+    name = models.CharField(max_length=200)
+    logo = models.ImageField(upload_to='project_logos/', blank=True)
+    description = models.CharField(max_length=500)
+    link = models.URLField(blank=True)
+    is_featured = models.BooleanField(default=False)
+    order = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name = 'Ecosystem Project'
+        verbose_name_plural = 'Ecosystem Projects'
+
+    def __str__(self):
+        return self.name

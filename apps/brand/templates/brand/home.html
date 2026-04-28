@@ -4,7 +4,7 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="relative bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-800 dark:to-blue-950 text-white py-20 lg:py-32">
+<section id="home" class="relative bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-800 dark:to-blue-950 text-white py-20 lg:py-32">
     <div class="absolute inset-0 bg-black bg-opacity-20"></div>
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto text-center">
@@ -15,10 +15,10 @@
                 Premium products and innovative solutions designed for excellence.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'brand:products' %}" class="inline-flex items-center justify-center px-8 py-3 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-blue-600 transition-colors">
+                <a href="#products" class="inline-flex items-center justify-center px-8 py-3 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-blue-600 transition-colors">
                     Explore Products
                 </a>
-                <a href="{% url 'brand:about' %}" class="inline-flex items-center justify-center px-8 py-3 bg-white text-blue-600 font-medium rounded-lg hover:bg-gray-100 transition-colors">
+                <a href="#about" class="inline-flex items-center justify-center px-8 py-3 bg-white text-blue-600 font-medium rounded-lg hover:bg-gray-100 transition-colors">
                     Learn More
                 </a>
             </div>
@@ -26,41 +26,8 @@
     </div>
 </section>
 
-<!-- Featured Products -->
-{% if featured_products %}
-<section class="py-16 bg-white dark:bg-gray-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Featured Products</h2>
-            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                Discover our handpicked selection of premium offerings.
-            </p>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {% for product in featured_products %}
-            <div class="bg-gray-50 dark:bg-gray-900 rounded-xl shadow-md overflow-hidden group transition-transform hover:scale-105">
-                <div class="h-48 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 flex items-center justify-center">
-                    <div class="w-16 h-16 bg-blue-600 dark:bg-blue-400 rounded-full flex items-center justify-center">
-                        <span class="text-white dark:text-gray-900 text-2xl font-bold">BB</span>
-                    </div>
-                </div>
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ product.name }}</h3>
-                    <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">{{ product.short_description|default:product.description|truncatewords:20 }}</p>
-                    <a href="{% url 'brand:product_detail' product.id %}" class="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
-                        Learn more &rarr;
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
-{% endif %}
-
 <!-- About Preview -->
-<section class="py-16 bg-gray-50 dark:bg-gray-900">
+<section id="about" class="scroll-mt-[192px] py-16 bg-gray-50 dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -75,8 +42,8 @@
                     With years of experience and a passion for excellence, we've built a reputation
                     for delivering premium solutions that exceed expectations.
                 </p>
-                <a href="{% url 'brand:about' %}" class="inline-flex items-center text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
-                    Read our full story &rarr;
+                <a href="#contact" class="inline-flex items-center text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                    Get in touch &rarr;
                 </a>
             </div>
             <div class="bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-2xl p-8 lg:p-12">
@@ -105,8 +72,107 @@
     </div>
 </section>
 
+<!-- Brand Carousel / Products Section -->
+<section id="products" class="scroll-mt-[192px] py-16 bg-white dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Our Ecosystem</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                Discover the projects and platforms that power the Byers Brands ecosystem.
+            </p>
+        </div>
+
+        <!-- Carousel Container -->
+        <div class="relative">
+            <!-- Left Arrow -->
+            <button id="carousel-left" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-700 shadow-lg rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" aria-label="Scroll left">
+                <svg class="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </button>
+
+            <!-- Carousel Track -->
+            <div id="carousel-track" class="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-4 px-10" style="scrollbar-width: thin;">
+                {% for project in projects %}
+                <div class="flex-none w-72 snap-center">
+                    <div class="h-72 bg-gray-50 dark:bg-gray-900 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden group hover:shadow-lg hover:border-blue-500 dark:hover:border-blue-400 transition-all">
+                        <!-- Project Logo Area -->
+                        <div class="h-40 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 flex items-center justify-center">
+                            {% if project.logo %}
+                                <img src="{{ project.logo.url }}" alt="{{ project.name }} logo" class="h-20 w-auto">
+                            {% else %}
+                                <div class="w-20 h-20 bg-blue-600 dark:bg-blue-400 rounded-full flex items-center justify-center">
+                                    <span class="text-white dark:text-gray-900 text-2xl font-bold">{{ project.name|first }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <!-- Project Info -->
+                        <div class="p-5">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ project.name }}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-3">{{ project.description }}</p>
+                            {% if project.link %}
+                            <a href="{{ project.link }}" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 text-sm font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                                Visit Project &rarr;
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Right Arrow -->
+            <button id="carousel-right" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-700 shadow-lg rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" aria-label="Scroll right">
+                <svg class="w-6 h-6 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Scroll Indicators -->
+        <div class="flex justify-center mt-6 space-x-2" id="carousel-indicators">
+            {% for project in projects %}
+            <button class="w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-600 hover:bg-blue-600 dark:hover:bg-blue-400 transition-colors indicator-dot" data-index="{{ forloop.counter0 }}" aria-label="Go to project {{ forloop.counter }}"></button>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+{% if featured_products %}
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Featured Products</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                Discover our handpicked selection of premium offerings.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {% for product in featured_products %}
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden group transition-transform hover:scale-105">
+                <div class="h-48 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 flex items-center justify-center">
+                    <div class="w-16 h-16 bg-blue-600 dark:bg-blue-400 rounded-full flex items-center justify-center">
+                        <span class="text-white dark:text-gray-900 text-2xl font-bold">BB</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{{ product.name }}</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">{{ product.short_description|default:product.description|truncatewords:20 }}</p>
+                    <a href="{% url 'brand:product_detail' product.id %}" class="text-blue-600 dark:text-blue-400 font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                        Learn more &rarr;
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
 <!-- Contact Preview -->
-<section class="py-16 bg-white dark:bg-gray-800">
+<section id="contact" class="scroll-mt-[192px] py-16 bg-white dark:bg-gray-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl mx-auto text-center">
             <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">
@@ -121,4 +187,94 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Smooth scrolling for anchor links with offset for header + logo overhang
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+            // Calculate offset: header height (h-24 = 96px) + logo overhang (96px) = 192px
+            const offset = 192;
+            const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+            window.scrollTo({
+                top: elementPosition - offset,
+                behavior: 'smooth'
+            });
+            // Update URL without jumping
+            history.pushState(null, null, this.getAttribute('href'));
+        }
+    });
+});
+
+// Carousel functionality
+const track = document.getElementById('carousel-track');
+const leftBtn = document.getElementById('carousel-left');
+const rightBtn = document.getElementById('carousel-right');
+const indicators = document.querySelectorAll('.indicator-dot');
+
+if (track && leftBtn && rightBtn) {
+    const scrollAmount = 300;
+
+    leftBtn.addEventListener('click', () => {
+        track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    rightBtn.addEventListener('click', () => {
+        track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+
+    // Update indicators on scroll
+    track.addEventListener('scroll', () => {
+        const scrollPos = track.scrollLeft;
+        const itemWidth = 300; // item width + gap
+        const activeIndex = Math.round(scrollPos / itemWidth);
+        indicators.forEach((dot, index) => {
+            dot.classList.toggle('bg-blue-600', index === activeIndex);
+            dot.classList.toggle('dark:bg-blue-400', index === activeIndex);
+            dot.classList.toggle('bg-gray-300', index !== activeIndex);
+            dot.classList.toggle('dark:bg-gray-600', index !== activeIndex);
+        });
+    });
+
+    // Indicator click
+    indicators.forEach(dot => {
+        dot.addEventListener('click', () => {
+            const index = parseInt(dot.dataset.index);
+            track.scrollTo({ left: index * 300, behavior: 'smooth' });
+        });
+    });
+}
+
+// Active nav highlighting on scroll
+const sections = ['home', 'about', 'products', 'contact'];
+const navLinks = document.querySelectorAll('.nav-link');
+
+function updateActiveNav() {
+    const scrollPos = window.scrollY + 100;
+
+    sections.forEach(id => {
+        const section = document.getElementById(id);
+        if (section) {
+            const top = section.offsetTop;
+            const bottom = top + section.offsetHeight;
+
+            if (scrollPos >= top && scrollPos < bottom) {
+                navLinks.forEach(link => {
+                    link.classList.toggle('text-blue-600', link.dataset.section === id);
+                    link.classList.toggle('dark:text-blue-400', link.dataset.section === id);
+                    link.classList.toggle('font-semibold', link.dataset.section === id);
+                });
+            }
+        }
+    });
+}
+
+window.addEventListener('scroll', updateActiveNav);
+updateActiveNav(); // Initial call
+</script>
 {% endblock %}
